@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobTracker — Śledzenie Czasu i Zarobków</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top bar with hourly rate -->
+        <header class="app-header">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <h1>JobTracker</h1>
+            </div>
+            <div class="rate-card">
+                <label for="hourly-rate">Stawka godzinowa (PLN):</label>
+                <div class="rate-input-wrapper">
+                    <input type="number" id="hourly-rate" min="0" step="0.5" value="100">
+                    <span class="rate-currency">zł/h</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="app-content">
+            <!-- Add project card -->
+            <section class="action-section">
+                <form id="add-project-form" class="add-project-form">
+                    <div class="input-group">
+                        <input type="text" id="project-name" placeholder="Wpisz nazwę nowego projektu lub zadania..." required autocomplete="off">
+                        <button type="submit" class="btn btn-primary" id="add-project-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Dodaj projekt
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Projects container -->
+            <section class="projects-section">
+                <div class="section-title">
+                    <h2>Aktywne projekty</h2>
+                </div>
+                <div id="projects-list" class="projects-list">
+                    <!-- Dynamic project cards will go here -->
+                    <div class="empty-state" id="empty-state">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-icon"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <p>Brak projektów. Dodaj swój pierwszy projekt powyżej, aby rozpocząć śledzenie czasu!</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Sticky Footer for Totals -->
+        <footer class="app-footer">
+            <div class="footer-stats">
+                <div class="stat-box">
+                    <span class="stat-label">Łączny czas</span>
+                    <span class="stat-value" id="total-time">0h 00m 00s</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-box">
+                    <span class="stat-label">Łączne zarobki</span>
+                    <span class="stat-value highlight" id="total-earnings">0,00 zł</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Manual Time Adjust Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edytuj czas projektu</h3>
+                <button class="close-btn" id="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-project-name" id="modal-project-name">Nazwa projektu</p>
+                <div class="time-inputs">
+                    <div class="modal-input-group">
+                        <label for="modal-hours">Godziny</label>
+                        <input type="number" id="modal-hours" min="0" value="0">
+                    </div>
+                    <div class="modal-input-group">
+                        <label for="modal-minutes">Minuty</label>
+                        <input type="number" id="modal-minutes" min="0" max="59" value="0">
+                    </div>
+                    <div class="modal-input-group">
+                        <label for="modal-seconds">Sekundy</label>
+                        <input type="number" id="modal-seconds" min="0" max="59" value="0">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-modal-btn">Anuluj</button>
+                <button class="btn btn-primary" id="save-modal-btn">Zapisz zmiany</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
