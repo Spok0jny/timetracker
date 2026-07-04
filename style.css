@@ -243,6 +243,23 @@ body {
     transform: translateY(0);
 }
 
+.btn-text {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition-fast);
+    padding: 0;
+}
+
+.btn-text:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
 .btn-icon.play-btn:hover {
     background: rgba(16, 185, 129, 0.15);
     border-color: var(--success);
@@ -296,7 +313,7 @@ body {
     padding: 18px 24px;
     border-radius: var(--radius-md);
     display: grid;
-    grid-template-columns: 1fr auto auto auto;
+    grid-template-columns: 1.4fr repeat(4, 110px) auto;
     align-items: center;
     gap: 24px;
     transition: var(--transition-normal);
@@ -380,6 +397,58 @@ body {
     text-transform: uppercase;
 }
 
+.project-paid-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    min-width: 110px;
+}
+
+.project-paid {
+    font-size: 18px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+}
+
+.project-paid-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.project-remaining-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    min-width: 110px;
+}
+
+.project-remaining {
+    font-size: 18px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    transition: color var(--transition-normal);
+}
+
+.project-remaining.pending {
+    color: var(--warning);
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+}
+
+.project-remaining.settled {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.project-remaining-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
 .project-actions {
     display: flex;
     gap: 8px;
@@ -458,6 +527,11 @@ body {
 .stat-value.highlight {
     color: var(--success);
     text-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+}
+
+.stat-value.highlight-remaining {
+    color: #38bdf8;
+    text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
 }
 
 .stat-divider {
@@ -621,7 +695,9 @@ body {
     }
     
     .project-time-wrapper,
-    .project-money-wrapper {
+    .project-money-wrapper,
+    .project-paid-wrapper,
+    .project-remaining-wrapper {
         align-items: flex-start;
         min-width: 0;
     }
@@ -642,5 +718,23 @@ body {
     
     .input-group {
         flex-direction: column;
+    }
+
+    .footer-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .footer-stats .stat-divider {
+        display: none;
+    }
+
+    .footer-stats .stat-box {
+        align-items: flex-start;
+    }
+
+    .app-footer {
+        padding: 16px 20px;
     }
 }

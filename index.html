@@ -67,6 +67,16 @@
                     <span class="stat-label">Łączne zarobki</span>
                     <span class="stat-value highlight" id="total-earnings">0,00 zł</span>
                 </div>
+                <div class="stat-divider"></div>
+                <div class="stat-box">
+                    <span class="stat-label">Łącznie zapłacono</span>
+                    <span class="stat-value" id="total-paid">0,00 zł</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-box">
+                    <span class="stat-label">Do rozliczenia</span>
+                    <span class="stat-value highlight-remaining" id="total-remaining">0,00 zł</span>
+                </div>
             </div>
         </footer>
     </div>
@@ -93,6 +103,13 @@
                         <label for="modal-seconds">Sekundy</label>
                         <input type="number" id="modal-seconds" min="0" max="59" value="0">
                     </div>
+                </div>
+                <div class="modal-input-group">
+                    <div class="modal-label-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                        <label for="modal-paid">Otrzymana zapłata (PLN)</label>
+                        <button type="button" id="modal-set-fully-paid" class="btn-text">Oznacz jako opłacony</button>
+                    </div>
+                    <input type="number" id="modal-paid" min="0" step="any" value="0">
                 </div>
             </div>
             <div class="modal-footer">

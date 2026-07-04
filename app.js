@@ -23,6 +23,7 @@ const modalSeconds = document.getElementById('modal-seconds');
 const saveModalBtn = document.getElementById('save-modal-btn');
 const cancelModalBtn = document.getElementById('cancel-modal-btn');
 const closeModalBtn = document.getElementById('close-modal-btn');
+const modalPaid = document.getElementById('modal-paid');
 let currentEditingProjectId = null;
 
 // Initialize App
@@ -93,6 +94,20 @@ function setupEventListeners() {
             closeModal();
         }
     });
+
+    const setFullyPaidBtn = document.getElementById('modal-set-fully-paid');
+    if (setFullyPaidBtn) {
+        setFullyPaidBtn.addEventListener('click', () => {
+            const hours = parseInt(modalHours.value) || 0;
+            const minutes = parseInt(modalMinutes.value) || 0;
+            const seconds = parseInt(modalSeconds.value) || 0;
+            const newTotalSeconds = (hours * 3600) + (minutes * 60) + seconds;
+            
+            const hoursDec = newTotalSeconds / 3600;
+            const earnings = hoursDec * state.hourlyRate;
+            modalPaid.value = (Math.round(earnings * 100) / 100).toFixed(2);
+        });
+    }
 }
 
 // Add a project
@@ -102,7 +117,8 @@ function addProject(name) {
         name: name,
         elapsedSeconds: 0,
         isRunning: false,
-        lastStarted: null
+        lastStarted: null,
+        paidAmount: 0
     };
 
     state.projects.push(newProject);
@@ -211,6 +227,8 @@ function renderProjectCard(project) {
     let card = document.getElementById(project.id);
     const totalSec = getProjectTotalSeconds(project);
     const earnings = calculateEarnings(totalSec);
+    const paidAmount = project.paidAmount || 0;
+    const remainingAmount = earnings - paidAmount;
 
     const cardHTML = `
         <div class="project-info">
@@ -225,6 +243,14 @@ function renderProjectCard(project) {
             <span class="project-money">${formatCurrency(earnings)}</span>
             <span class="project-money-label">Zarobek</span>
         </div>
+        <div class="project-paid-wrapper">
+            <span class="project-paid">${formatCurrency(paidAmount)}</span>
+            <span class="project-paid-label">Zapłacono</span>
+        </div>
+        <div class="project-remaining-wrapper">
+            <span class="project-remaining ${remainingAmount > 0.01 ? 'pending' : 'settled'}">${formatCurrency(remainingAmount)}</span>
+            <span class="project-remaining-label">Do rozliczenia</span>
+        </div>
         <div class="project-actions">
             <button class="btn-icon ${project.isRunning ? 'pause-btn' : 'play-btn'}" onclick="toggleTimer('${project.id}')" title="${project.isRunning ? 'Wstrzymaj' : 'Uruchom'}">
                 ${project.isRunning ? 
@@ -232,7 +258,7 @@ function renderProjectCard(project) {
                     `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`
                 }
             </button>
-            <button class="btn-icon edit-btn" onclick="openEditModal('${project.id}')" title="Edytuj czas ręcznie">
+            <button class="btn-icon edit-btn" onclick="openEditModal('${project.id}')" title="Edytuj czas i płatność">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
             </button>
             <button class="btn-icon delete-btn" onclick="deleteProject('${project.id}')" title="Usuń projekt">
@@ -256,10 +282,26 @@ function renderProjectCard(project) {
 function updateProjectMoneyDisplay(project) {
     const card = document.getElementById(project.id);
     if (card) {
+        const totalSec = getProjectTotalSeconds(project);
+        const earnings = calculateEarnings(totalSec);
+        const paidAmount = project.paidAmount || 0;
+        const remainingAmount = earnings - paidAmount;
+
         const moneyEl = card.querySelector('.project-money');
         if (moneyEl) {
-            const totalSec = getProjectTotalSeconds(project);
-            moneyEl.textContent = formatCurrency(calculateEarnings(totalSec));
+            moneyEl.textContent = formatCurrency(earnings);
+        }
+
+        const remainingEl = card.querySelector('.project-remaining');
+        if (remainingEl) {
+            remainingEl.textContent = formatCurrency(remainingAmount);
+            if (remainingAmount > 0.01) {
+                remainingEl.classList.add('pending');
+                remainingEl.classList.remove('settled');
+            } else {
+                remainingEl.classList.remove('pending');
+                remainingEl.classList.add('settled');
+            }
         }
     }
 }
@@ -284,12 +326,28 @@ function renderAll() {
 // Update global totals in the footer
 function updateTotals() {
     let totalSeconds = 0;
+    let totalPaid = 0;
+
     state.projects.forEach(project => {
         totalSeconds += getProjectTotalSeconds(project);
+        totalPaid += project.paidAmount || 0;
     });
 
+    const totalEarnings = calculateEarnings(totalSeconds);
+    const totalRemaining = totalEarnings - totalPaid;
+
     totalTimeEl.textContent = formatTotalTime(totalSeconds);
-    totalEarningsEl.textContent = formatCurrency(calculateEarnings(totalSeconds));
+    totalEarningsEl.textContent = formatCurrency(totalEarnings);
+
+    const totalPaidEl = document.getElementById('total-paid');
+    if (totalPaidEl) {
+        totalPaidEl.textContent = formatCurrency(totalPaid);
+    }
+
+    const totalRemainingEl = document.getElementById('total-remaining');
+    if (totalRemainingEl) {
+        totalRemainingEl.textContent = formatCurrency(totalRemaining);
+    }
 }
 
 // Format total time with Polish labels
@@ -319,6 +377,8 @@ window.openEditModal = function(id) {
     modalMinutes.value = minutes;
     modalSeconds.value = seconds;
 
+    modalPaid.value = project.paidAmount !== undefined ? project.paidAmount : 0;
+
     editModal.classList.add('active');
 };
 
@@ -342,7 +402,10 @@ function saveModalChanges() {
     const newTotalSeconds = (hours * 3600) + (minutes * 60) + seconds;
 
     project.elapsedSeconds = newTotalSeconds;
-    
+
+    const paidVal = parseFloat(modalPaid.value);
+    project.paidAmount = isNaN(paidVal) || paidVal < 0 ? 0 : paidVal;
+
     if (project.isRunning) {
         // If it was running, reset the running timestamp to now since we modified elapsed time
         project.lastStarted = Date.now();
